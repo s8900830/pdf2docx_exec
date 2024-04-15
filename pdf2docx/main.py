@@ -1,22 +1,18 @@
 from pdf2docx import Converter
 from tkinter import messagebox
 import tkinter as tk
-import sys,os
+import sys,os,multiprocessing
 
 # 轉換本身
 def pdf_to_docx(pdf_filepath):
     try:
-
-        # 取得檔名
-        docx_filename = os.path.basename(pdf_filepath)
-        
         # 製作儲存位置？或是預設同個檔案位置？
-        docx_filepath = os.path.abspath(os.getcwd())+f'\\{docx_filename.replace(".pdf","")}.docx'
-        
+        docx_filepath = pdf_filepath.replace(".pdf","")
+
         # 如檔案存在，是否要繼續執行？還是要更改檔名？
         if os.path.exists(docx_filepath):
-            print('存在')
-            return
+            # print('存在')
+            pass
         
         # 預備製作輸入密碼的視窗
         cv = Converter(pdf_filepath, password='')
@@ -54,6 +50,9 @@ def log():
     pass
 
 if __name__=='__main__':
+    # 看起來 Windows 會有多執行問題？
+    multiprocessing.freeze_support()
+
     system_argv = sys.argv
     # 重新製作 argv 的內容？
 
@@ -64,3 +63,4 @@ if __name__=='__main__':
         print()
     else:
         pdf_to_docx(system_argv[1])
+

@@ -1,2 +1,5 @@
 .env
 testfile
+dist
+build
+main.spec
