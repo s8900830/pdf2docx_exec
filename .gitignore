@@ -3,3 +3,4 @@ testfile
 dist
 build
 main.spec
+.vscode
