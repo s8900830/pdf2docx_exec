@@ -1,11 +1,10 @@
 from pdf2docx import Converter
 from tkinter import messagebox
-import os
+import os,gui
+
 
 # 轉換本身
-
-
-def pdf_to_docx(pdf_filepath):
+def pdf_to_docx(id=0,pdf_filepath=''):
     try:
         # 製作儲存位置？或是預設同個檔案位置？
         docx_filepath = pdf_filepath.replace(".pdf", ".docx")
@@ -19,8 +18,8 @@ def pdf_to_docx(pdf_filepath):
         cv = Converter(pdf_filepath, password='')
 
         # 發現這邊的多線程有問題，先暫時不使用
-        print(cv.convert(docx_filepath, multi_processing=False))
-
+        status=cv.convert(docx_filepath, multi_processing=False)
+        gui.update(status)
         # 關閉轉換
         cv.close()
 
