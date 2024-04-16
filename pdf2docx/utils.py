@@ -19,7 +19,7 @@ def pdf_to_docx(pdf_filepath):
         cv = Converter(pdf_filepath, password='')
 
         # 發現這邊的多線程有問題，先暫時不使用
-        cv.convert(docx_filepath, multi_processing=False)
+        print(cv.convert(docx_filepath, multi_processing=False))
 
         # 關閉轉換
         cv.close()
@@ -51,8 +51,10 @@ def log():
 
 # 測試區段
 if __name__ == '__main__':
-    filelist = ['g:\\Python_Training\\github\\pdf2docx_exec\\testfile\\catalog.pdf',
-                'g:\\Python_Training\\github\\pdf2docx_exec\\testfile\\KSS-Technical_Data-Wirefill_Capacity-TC.pdf']
+    # filelist = ['g:\\Python_Training\\github\\pdf2docx_exec\\testfile\\catalog.pdf',
+    #             'g:\\Python_Training\\github\\pdf2docx_exec\\testfile\\KSS-Technical_Data-Wirefill_Capacity-TC.pdf']
+    
+    filelist=["D:\\code\\pdf2docx\\testfile\\進口機車車型耗能證明113年1月核發資料 (1).pdf"]
     # 主要執行區段
     for n in filelist:
         pdf_to_docx(n)
