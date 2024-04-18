@@ -1,10 +1,12 @@
 from pdf2docx import Converter
 from tkinter import messagebox
-import os,gui
+import os, main_gui 
 
 
 # 轉換本身
-def pdf_to_docx(id=0,pdf_filepath=''):
+def pdf_to_docx(self,id='',pdf_filepath='',docx_filepath=''):
+    main_gui.function.update(self,id=id)
+    return pdf_filepath
     try:
         # 製作儲存位置？或是預設同個檔案位置？
         docx_filepath = pdf_filepath.replace(".pdf", ".docx")

@@ -4,7 +4,7 @@ from tkinter import ttk
 from ttk_compact import compact as ttkc
 from tkinter import filedialog as fd
 from tkinter import messagebox
-import os
+import os,utils
 
 class mainprocess:
     def __init__(self):
@@ -13,6 +13,8 @@ class mainprocess:
         self.root.iconbitmap=''
         # root.resizable(False, False)
         self.root.geometry('700x500')
+        self.pdffilelist = []
+        self.docxfilelist = []
 
         menubar = tk.Menu(self.root)
         menu_file = tk.Menu(menubar,tearoff=False)
@@ -41,7 +43,8 @@ class mainprocess:
         self.table_scroll_vertical.config(command=self.table.yview)
         self.table_scroll_horizontal.config(command=self.table.xview)
 
-        self.table.bind('<Double-Button-1>',function.open_docx_location(self,''))
+        # WTF，還是需要用 lambda 然後要在這邊加入 event 做事件
+        self.table.bind('<Double-Button-1>',lambda event: function.open_docx_location(self,event))
 
         self.table.pack(expand=YES, fill=BOTH)
 
@@ -53,7 +56,7 @@ class mainprocess:
         # 把 button 做成另一個 Func，反正都是在底部
         # 這問題我不知道 為什麼要先加入 lambda 函數才不會造成 command 先執行
         # 這邊是有順序的，執行;開啟檔案;離開;更新資料--> 最後這個是為了進度條的功能驗證
-        ttkc.bottom_btn(sec_frame,'Execute',lambda:function.input_secretGUI(self))
+        ttkc.bottom_btn(sec_frame,'Execute',lambda:function.exec_Process(self))
         ttkc.bottom_btn(sec_frame,'Open File',lambda:function.input_secretGUI(self))
         ttkc.bottom_btn(sec_frame,'Exit',self.root.destroy)
         ttkc.bottom_btn(sec_frame,'update',lambda : function.update(self)) 
@@ -71,22 +74,35 @@ class function:
 
         filename = fd.askopenfilename(title='Open a file',initialdir='/',filetypes=filetypes)
         
-        
+        self.pdffilelist.append(filename)
+        self.docxfilelist.append(filename.replace(".pdf", ".docx"))
+
         # 放資料
-        # table.insert('','end',values=(123,456))
-        for n in range(20):
-            table.insert('','end',values=(os.path.basename(filename),n))
+        # for n in range(20):
+        #     table.insert('','end',values=(os.path.basename(filename),f'Not Start'))
+
+        table.insert('','end',values=(os.path.basename(filename),f'Not Start'))
 
     def open_docx_location(self,event=None):
+        # 看要怎麼取轉換後的路徑，我已經先存在 docxlist 內？
         item1 = self.table.focus()
         if item1:
             print (self.table.item(item1))
+            # print (self.table.item(item1))
         pass
 
-    def update(self,id=0,status=''):
+    def exec_Process(self):
+        processlist = self.table.get_children()
+        # for i in range(len(processlist)) :
+        #     utils.pdf_to_docx(self=self,id=processlist[i],pdf_filepath=self.pdffilelist[i],docx_filepath=self.docxfilelist[i])
+
+    def update(self,id='',status=''):
         get = self.table.get_children()
-        focused = self.table.focus()
-        self.table.set(focused,value=('132456','156478'))
+        for n in get:
+            selected_item = self.table.item(n)
+            # exec pdf2docx
+            self.table.item(n,values=('','25'))
+        # self.table.set(focused,colume='I001',value='112233')
         pass
 
 # 是不是要搞個GUI -> 正在做
