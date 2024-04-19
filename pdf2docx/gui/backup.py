@@ -1,13 +1,15 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
-from ttk_compact import compact as ttkc
+from pdf2docx.gui.ttk_compact import compact as ttkc
 from tkinter import filedialog as fd
 from tkinter import messagebox
-import os,utils
+from threading import Thread
+import os,utils,time
 
-class mainprocess:
+class MainProcess:
     def __init__(self):
+        self.running = False
         self.root =tk.Tk()
         self.root.title('PDF 2 DOCX')
         self.root.iconbitmap=''
@@ -44,7 +46,7 @@ class mainprocess:
         self.table_scroll_horizontal.config(command=self.table.xview)
 
         # WTF，還是需要用 lambda 然後要在這邊加入 event 做事件
-        self.table.bind('<Double-Button-1>',lambda event: function.open_docx_location(self,event))
+        self.table.bind('<Double-Button-1>',lambda event: self.open_docx_location(self,event))
 
         self.table.pack(expand=YES, fill=BOTH)
 
@@ -56,15 +58,17 @@ class mainprocess:
         # 把 button 做成另一個 Func，反正都是在底部
         # 這問題我不知道 為什麼要先加入 lambda 函數才不會造成 command 先執行
         # 這邊是有順序的，執行;開啟檔案;離開;更新資料--> 最後這個是為了進度條的功能驗證
-        ttkc.bottom_btn(sec_frame,'Execute',lambda:function.exec_Process(self))
-        ttkc.bottom_btn(sec_frame,'Open File',lambda:function.input_secretGUI(self))
+        ttkc.bottom_btn(sec_frame,'Execute',lambda :self.start_task())
+        ttkc.bottom_btn(sec_frame,'Cancel',lambda:self.stop_task())
+        ttkc.bottom_btn(sec_frame,'Open File',lambda:self.input_secretGUI())
         ttkc.bottom_btn(sec_frame,'Exit',self.root.destroy)
-        ttkc.bottom_btn(sec_frame,'update',lambda : function.update(self)) 
+        # ttkc.bottom_btn(sec_frame,'update',lambda : self.update(self)) 
 
         # run the application
         self.root.mainloop()
 
-class function:
+
+
     def input_secretGUI(self):
         table=self.table
         filetypes = (
@@ -73,7 +77,7 @@ class function:
         )
 
         filename = fd.askopenfilename(title='Open a file',initialdir='/',filetypes=filetypes)
-        
+
         self.pdffilelist.append(filename)
         self.docxfilelist.append(filename.replace(".pdf", ".docx"))
 
@@ -90,23 +94,43 @@ class function:
             print (self.table.item(item1))
             # print (self.table.item(item1))
         pass
+    
+    def schedule_check(self,t):
+        """
+        Schedule the execution of the `check_if_done()` function after
+        one second.
+        """
+        self.root.after(1000, self.check_if_done, t)
 
-    def exec_Process(self):
-        processlist = self.table.get_children()
-        # for i in range(len(processlist)) :
-        #     utils.pdf_to_docx(self=self,id=processlist[i],pdf_filepath=self.pdffilelist[i],docx_filepath=self.docxfilelist[i])
+    def check_if_done(self,t):
+        if not t.is_alive():
+            pass
+        else:
+            self.schedule_check(self,t)
 
-    def update(self,id='',status=''):
-        get = self.table.get_children()
-        for n in get:
-            selected_item = self.table.item(n)
-            # exec pdf2docx
-            self.table.item(n,values=('','25'))
-        # self.table.set(focused,colume='I001',value='112233')
-        pass
+    def start_task(self):
+        t = Thread(target=self.run_pdf2docx())
+        t.start()
+        self.schedule_check(t=t)
+
+    def run_pdf2docx(self):
+        utils.pdf_to_docx()
+
+        
+    def stop_task(self):
+        t = False
+
+    # def update(self,id='',status=''):
+    #     get = self.table.get_children()
+    #     for n in get:
+    #         selected_item = self.table.item(n)
+    #         # exec pdf2docx
+    #         self.table.item(n,values=('','25'))
+    #     # self.table.set(focused,colume='I001',value='112233')
+    #     pass
 
 # 是不是要搞個GUI -> 正在做
 # 自動排程？
 
 if __name__ == '__main__':
-    main = mainprocess()
+    main = MainProcess()
