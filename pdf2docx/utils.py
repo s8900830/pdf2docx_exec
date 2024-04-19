@@ -1,6 +1,6 @@
 from pdf2docx import Converter
 from tkinter import messagebox
-import os, pdf2docx.gui.main_gui as main_gui 
+import os, pdf2docx.gui.gui as main_gui 
 
 
 # 轉換本身
