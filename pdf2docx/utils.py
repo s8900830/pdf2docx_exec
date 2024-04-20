@@ -1,7 +1,6 @@
 from pdf2docx import Converter
 from tkinter import messagebox
-import os, pdf2docx.gui.gui as main_gui 
-
+import os
 
 # 轉換本身
 def pdf_to_docx(id='',pdf_filepath='',docx_filepath=''):
